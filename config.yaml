@@ -1,0 +1,67 @@
+Imds:
+  ImdsSupport: v2.0
+HeadNode:
+  InstanceType: m6a.xlarge
+  Imds:
+    Secured: true
+  Ssh:
+    KeyName: himedia-hpc-prod
+  LocalStorage:
+    RootVolume:
+      VolumeType: gp3
+      Encrypted: true
+      Size: 500
+  Networking:
+    SubnetId: subnet-04f97a2ad4bb9e41a
+  Iam:
+    AdditionalIamPolicies:
+      - Policy: arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+  Dcv:
+    Enabled: true
+Scheduling:
+  Scheduler: slurm
+  SlurmQueues:
+    - Name: hpc6aqueue
+      AllocationStrategy: lowest-price
+      ComputeResources:
+        - Name: hpc6aqueue-cr-0
+          Instances:
+            - InstanceType: hpc6a.48xlarge
+          MinCount: 0
+          MaxCount: 2
+          Efa:
+            Enabled: true
+            GdrSupport: true
+      ComputeSettings:
+        LocalStorage:
+          RootVolume:
+            VolumeType: gp3
+            Encrypted: true
+            Size: 500
+      Networking:
+        SubnetIds:
+          - subnet-07bd783161e20dea6
+        PlacementGroup:
+          Enabled: true
+      CustomActions:
+        OnNodeConfigured:
+          Script: s3://himedia-user-deployment-script/create-users-with-groups.sh
+      Iam:
+        AdditionalIamPolicies:
+          - Policy: arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
+  SlurmSettings: {}
+Region: us-east-2
+Image:
+  Os: alinux2
+SharedStorage:
+  - Name: FsxLustre0
+    StorageType: FsxLustre
+    MountDir: /fsxshare
+    FsxLustreSettings:
+      DeletionPolicy: Retain
+      StorageCapacity: 1200
+      DeploymentType: PERSISTENT_2
+      PerUnitStorageThroughput: 125
+Tags:
+  - Key: parallelcluster-ui
+    Value: 'true'
