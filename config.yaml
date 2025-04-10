@@ -64,4 +64,4 @@ SharedStorage:
       PerUnitStorageThroughput: 125
 Tags:
   - Key: parallelcluster-ui
-    Value: 'true'
+    Value: 'False'
